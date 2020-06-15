@@ -1,0 +1,208 @@
+#:kivy 1.11.1
+#:import Factory kivy.factory.Factory
+#:import CheckBox kivy.uix.checkbox
+#:import DropDown kivy.uix.dropdown
+#:import BoxLayout kivy.uix.boxlayout 
+#:import Popup    kivy.uix.popup
+#:import Spinner  kivy.uix.spinner 
+#:import Splitter kivy.uix.splitter 
+#:import ScrollView kivy.uix.scrollview 
+#:import utils kivy.utils 
+#:import TabbedPanel kivy.uix.tabbedpanel
+
+#:set wd "100"
+#:set rowHeight 0.2
+#:set pad 5
+#:set btnHeight 35
+#:set minHeight 1200
+#:set textHeight 20
+#:set blue utils.get_color_from_hex("#b3ffb3")
+#:set white utils.get_color_from_hex("#F2F2F2")
+#:set linkBlue utils.get_color_from_hex("#33A3FF") 
+
+# Description: User Interface for feeder controller 
+
+#<> This represents a class that can be inherited
+<BackgroundColor@Widget>: 
+    backgroundColor: 1, 1, 1, 1
+    canvas.before: 
+        Color:
+            rgba: root.backgroundColor 
+        Rectangle:
+            size: self.size
+            pos: self.pos 
+
+<OutputLabel@Label+BackgroundColor>
+    backgroundColor: white
+
+
+<CheckBoxOption@BoxLayout>
+    orientation: 'horizontal'
+    txt: "default"
+    grp: "default" 
+    val: None    
+    CheckBox:  
+        id: check
+        group: root.grp
+        color: linkBlue
+        on_active: app.main.updateSettings(root.grp,root.val, self.active)  
+    Label:  
+        text: root.txt 
+     
+    
+<DropDownButton@Button>    
+    btnTxt: "default"
+    text: root.btnTxt   
+    on_release: root.dropDown.select(root.btnTxt)
+
+
+<OtherSettings@Popup>:
+    auto_dismiss: False 
+    title: "Other Settings"
+    title_align: "center"
+    size_hint_y: 0.3
+    size_hint_x: 0.3
+    BoxLayout: 
+        orientation: "vertical"
+        Button: 
+            text: "Close"
+            size_hint_y: None 
+            height: btnHeight
+            on_release: root.dismiss()        
+        Label: 
+            text: "Motor Power"
+        TextInput: 
+            size_hint_y: None 
+            height: textHeight
+            hint_text: "Enter percent"
+            on_text_validate: app.main.updateOtherSettings(self.text); self.text = ""                            
+        
+    
+<DropDownOption@SpinnerOption>
+    size_hint_y: None 
+    height: btnHeight
+
+<HeaderLabel@Label>
+    text_size: self.size
+    halign: "justify" 
+    valign: "middle"
+    bold: True
+    padding: 10, 0 
+
+<TextIn@TextInput>
+    size_hint_y: None  
+    height: btnHeight
+    valign: "top" 
+    focus: True 
+    multiline: False 
+
+MainScreen:
+    name: "main"
+    fullScreen: True 
+    id: main
+    RelativeLayout:
+        Image:             
+            source: "./chicken.png"
+            size_hint: 0.1, 0.1
+            pos_hint:{'center_x':0.05, 'center_y':0.95}
+        Label: 
+            text: "Let us take care of the house pets!"           
+            pos_hint:{'center_x':0.25, 'center_y':0.95} # Center locations
+        ProgressBar:  
+            value: 0
+            pos_hint:{'center_x':0.5, 'center_y':0.90}
+            min: 0 
+            max: 4
+        Button: 
+            text: "Other Settings"    
+            pos_hint:{'center_x':0.75, 'center_y':0.95}                     
+            on_release: Factory.OtherSettings().open()                    
+            size_hint_x: 0.2 
+            size_hint_y: None  
+            height: btnHeight
+            valign: "center"
+      
+        TabbedPanel:
+            pos_hint:{'center_x':0.5, 'center_y':0.40}                       
+            do_default_tab: False                    
+            TabbedPanelItem:
+                text: "Task 0"
+                BoxLayout:
+                    orientation: "vertical"
+                    Splitter:
+                        sizable_from: "right"
+                        Label:
+                            text: "Hello"                   
+            TabbedPanelItem:
+                text:"Task 4"             
+                BoxLayout:                      
+                    Label:
+                        text:"Am I visible?"                                                
+                    GridLayout:
+                        cols: 2
+                        size_hint_y: rowHeight                   
+                        HeaderLabel: 
+                            text: "On"                                                                                                   
+                        CheckBoxOption:
+                            txt: "Yes"
+                            val: "Yes"
+                            grp: "on"        
+                    GridLayout: 
+                        cols: 2
+                        size_hint_y: rowHeight                                                               
+                        HeaderLabel: 
+                            text: "Speed up"                                                                          
+                        CheckBoxOption:  
+                            txt: "Yes"
+                            val: "Yes"    
+                            grp: "SpeedUp"
+                    GridLayout:
+                        cols: 2
+                        size_hint_y: rowHeight
+                        HeaderLabel: 
+                            text: "Task1 Method"                            
+                        Spinner: 
+                            id: spinTask1                       
+                            on_text: app.main.handleSpinnerValues("Task1",spinTask1.text.lower())                                             
+                            text: "Select Method"    
+                            values: ["Flow", "Rolling"]   
+                            option_cls: Factory.get("DropDownOption")
+                            size_hint_y: None  
+                            height: btnHeight
+                            valign: "center"                         
+                    GridLayout: 
+                        cols: 3
+                        size_hint_y: rowHeight
+                        HeaderLabel: 
+                            text: "Task1 Timing"
+                        Switch: 
+                            on_active: app.main.updateSettings("Task1 Timing", "ON", self.active)                  
+                        TextIn: 
+                            hint_text: "Enter time"
+                            on_text_validate: app.main.updateSettings("Task1 time",self.text, True); self.text = ""
+                    GridLayout: 
+                        cols: 1
+                        size_hint_y: rowHeight
+                        HeaderLabel: 
+                            text: "Task 1 Report"
+                    BoxLayout:
+                        orientation: "vertical"   
+                        size_hint_y:rowHeight            
+                        OutputLabel:
+                            markup: True 
+                            text_size: self.size
+                            text: app.main.saveCommandPrompt(self)
+                            color: 0, 0, 0, 1
+                            multiline: True 
+                TabbedPanelItem:
+                    text:"Task 2"
+                    Button:
+                        size_hint_x: 0.2
+                        size_hint_y: 0.2 
+                        text: "I am task 2"
+                        
+                    
+
+                
+
+          
