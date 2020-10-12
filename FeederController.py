@@ -2,7 +2,7 @@ import os
 
 import kivy 
 kivy.require('1.11.1')
-
+# Remember to install kivy dependenciess 
 from kivy.app import App 
 from kivy.uix.label import Label
 from kivy.uix.widget import Widget
