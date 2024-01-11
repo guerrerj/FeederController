@@ -5,8 +5,8 @@ description = ""
 authors = ["'Jose <'jose.guerrero@ericsson.com'>"]
 
 [tool.poetry.dependencies]
-python = "^3.7"
-kivy = "1.11.1"
+python = "^3.8"
+kivy = "2.3.0"
 
 [tool.poetry.dev-dependencies]
 
